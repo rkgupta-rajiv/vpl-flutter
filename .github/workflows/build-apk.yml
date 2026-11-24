@@ -17,7 +17,7 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     env:
-      API_BASE_URL: ${{ github.event.inputs.api_base_url || vars.API_BASE_URL || 'http://10.0.2.2:8000/api' }}
+      API_BASE_URL: ${{ github.event.inputs.api_base_url || vars.API_BASE_URL || 'https://sunshine-delhi-memo-automatic.trycloudflare.com/api' }}
     steps:
       - uses: actions/checkout@v4
 
