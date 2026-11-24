@@ -19,12 +19,12 @@ jobs:
     env:
       API_BASE_URL: ${{ github.event.inputs.api_base_url || vars.API_BASE_URL || 'https://sunshine-delhi-memo-automatic.trycloudflare.com/api' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - uses: subosito/flutter-action@v2
         with:
@@ -41,7 +41,13 @@ jobs:
       - run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Build release APK
-        run: flutter build apk --release --dart-define=API_BASE_URL=$API_BASE_URL
+        run: |
+          set -o pipefail
+          flutter build apk --release --dart-define=API_BASE_URL=$API_BASE_URL 2>&1 | tee build.log
+      - name: Show build error
+        if: failure()
+        run: |
+          grep -n -i -E "error|wrong|failed|exception|caused by|not found|incompatible" build.log | head -15 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
 
       - name: Name the APK
         run: cp build/app/outputs/flutter-apk/app-release.apk vpl-player.apk
