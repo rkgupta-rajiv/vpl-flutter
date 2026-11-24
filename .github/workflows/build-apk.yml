@@ -1,0 +1,63 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      api_base_url:
+        description: 'API base URL baked into the app (e.g. https://vpl.example.com/api)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      API_BASE_URL: ${{ github.event.inputs.api_base_url || vars.API_BASE_URL || 'http://10.0.2.2:8000/api' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # The repo only holds lib/ + pubspec; generate the android/ platform folder here.
+      - name: Generate platform folders
+        run: |
+          flutter create . --project-name vpl_player --org com.webcreta --platforms=android
+          dart run tool/setup_platforms.dart
+
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Build release APK
+        run: flutter build apk --release --dart-define=API_BASE_URL=$API_BASE_URL
+
+      - name: Name the APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk vpl-player.apk
+
+      # Download from the run page -> Artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vpl-player-apk
+          path: vpl-player.apk
+
+      # Stable download link: Releases -> "Latest build" (updated on every push to main)
+      - name: Publish to GitHub Release
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'latest' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'Latest build' }}
+          files: vpl-player.apk
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
