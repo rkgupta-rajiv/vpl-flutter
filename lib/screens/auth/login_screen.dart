@@ -142,7 +142,7 @@ class _Hero extends StatelessWidget {
         builder: (context, snap) {
           final t = snap.data;
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const CircleAvatar(radius: 26, backgroundColor: AppColors.ball, child: Icon(Icons.sports_cricket, color: Colors.white)),
+            const Image(image: AssetImage('assets/images/logo.png'), width: 88, height: 88),
             const Gap(16),
             Text(t?.season.toUpperCase() ?? 'CRICKET TOURNAMENT', style: const TextStyle(color: AppColors.gold, letterSpacing: 2, fontSize: 12, fontWeight: FontWeight.w700)),
             const Gap(4),

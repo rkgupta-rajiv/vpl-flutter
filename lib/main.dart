@@ -76,7 +76,7 @@ class _Splash extends StatelessWidget {
       backgroundColor: AppColors.pitchDeep,
       body: Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          CircleAvatar(radius: 34, backgroundColor: AppColors.ball, child: Icon(Icons.sports_cricket, color: Colors.white, size: 34)),
+          Image(image: AssetImage('assets/images/logo.png'), width: 140, height: 140),
           SizedBox(height: 18),
           CircularProgressIndicator(color: AppColors.gold),
         ]),

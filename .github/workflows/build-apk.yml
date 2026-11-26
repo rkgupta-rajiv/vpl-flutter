@@ -36,6 +36,9 @@ jobs:
         run: |
           flutter create . --project-name vpl_player --org com.webcreta --platforms=android
           dart run tool/setup_platforms.dart
+          cp -R tool/android_res/. android/app/src/main/res/
+          # drop any adaptive icon so the VPL launcher PNGs are used
+          rm -rf android/app/src/main/res/mipmap-anydpi*
 
       - run: flutter pub get
       - run: flutter analyze --no-fatal-infos --no-fatal-warnings

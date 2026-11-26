@@ -22,6 +22,9 @@ void _android() {
   }
   var xml = f.readAsStringSync();
 
+  // Name shown under the launcher icon.
+  xml = xml.replaceFirst(RegExp(r'android:label="[^"]*"'), 'android:label="VPL"');
+
   if (!xml.contains('android.permission.INTERNET')) {
     xml = xml.replaceFirst(RegExp(r'<manifest[^>]*>'), '${RegExp(r'<manifest[^>]*>').firstMatch(xml)!.group(0)}\n    <uses-permission android:name="android.permission.INTERNET"/>');
   }
