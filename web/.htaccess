@@ -1,0 +1,6 @@
+# Flutter file names are not hashed: always revalidate so updates reach installed apps.
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache"
+</IfModule>
+DirectoryIndex index.html
+AddType application/wasm .wasm
